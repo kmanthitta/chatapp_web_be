@@ -2,6 +2,8 @@ const express = require("express");
 const ChatRoom = require("../models/ChatRoom");
 const mongoose = require("mongoose");
 const router = express.Router();
+const { Types } = require("mongoose");
+var ObjectId = Types.ObjectId;
 
 router.post("/create", (req, res, next) => {
   const { participants, name, type } = req.body;
@@ -14,9 +16,7 @@ router.post("/create", (req, res, next) => {
 
 router.post("/ping", async (req, res, next) => {
   const { author, chatroomId, message } = req.body;
-  const room = await ChatRoom.findById(chatroomId);
-  console.log("ROOM", room);
-  console.log(room.pings);
+  const room = await ChatRoom.findById(new ObjectId(chatroomId));
   room.pings.push({ author, message });
   room
     .save()
@@ -24,4 +24,14 @@ router.post("/ping", async (req, res, next) => {
     .catch((error) => res.send(error));
 });
 
-module.exports = router;
+const createDMChat = async (user1, user2) => {
+  const chat = new ChatRoom({
+    name: "",
+    type: "dm",
+    participants: [user1, user2],
+  });
+  const result = await chat.save();
+  return result;
+};
+
+module.exports = { router, createDMChat };

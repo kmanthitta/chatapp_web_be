@@ -5,7 +5,7 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 
 const register = require("./routes/register");
-const chat = require("./routes/chat");
+const chat = require("./routes/chat").router;
 const find = require("./routes/find");
 const login = require("./routes/login");
 
