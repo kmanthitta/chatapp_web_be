@@ -18,6 +18,7 @@ router.post("/ping", async (req, res, next) => {
   const { author, chatroomId, message } = req.body;
   const room = await ChatRoom.findById(new ObjectId(chatroomId));
   room.pings.push({ author, message });
+  room.latestPing = { author, message };
   room
     .save()
     .then(() => res.send("Sent"))

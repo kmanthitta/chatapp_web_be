@@ -9,7 +9,7 @@ router.post("/", async (req, res, next) => {
     if (result.pwd !== pwd) {
       res.status(401).send("Invalid password");
     } else {
-      res.send({ message: "User created", id: result._id });
+      res.send({ message: "Success", id: result._id });
     }
   } else {
     res.status(500).send("User not found");

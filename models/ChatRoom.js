@@ -22,6 +22,15 @@ const ChatRoom = new Schema(
       ],
       default: [],
     },
+    latestPing: {
+      type: new Schema(
+        {
+          author: { type: ObjectId, ref: "User" },
+          message: String,
+        },
+        { timestamps: true }
+      ),
+    },
   },
   { timestamps: true }
 );
