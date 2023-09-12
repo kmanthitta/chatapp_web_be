@@ -19,9 +19,44 @@ router.post("/ping", async (req, res, next) => {
   const room = await ChatRoom.findById(new ObjectId(chatroomId));
   room.pings.push({ author, message });
   room.latestPing = { author, message };
+  let userFound = false;
+  room.read.forEach((user) => {
+    if (user.participantId === author) {
+      user.readNotificationCount = room.pings.length;
+      userFound = true;
+    }
+  });
+  if (!userFound) {
+    room.read.push({
+      participantId: author,
+      readNotificationCount: room.pings.length,
+    });
+  }
   room
     .save()
     .then(() => res.send("Sent"))
+    .catch((error) => res.send(error));
+});
+
+router.post("/read", async (req, res, next) => {
+  const { userId, chatroomId, count } = req.query;
+  const room = await ChatRoom.findById(new ObjectId(chatroomId));
+  let userFound = false;
+  room.read.forEach((user) => {
+    if (user.participantId === userId) {
+      user.readNotificationCount = count;
+      userFound = true;
+    }
+  });
+  if (!userFound) {
+    room.read.push({
+      participantId: userId,
+      readNotificationCount: count,
+    });
+  }
+  room
+    .save()
+    .then(() => res.send("Read"))
     .catch((error) => res.send(error));
 });
 

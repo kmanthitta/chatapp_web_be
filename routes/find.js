@@ -12,7 +12,6 @@ router.get("/mychats", async (req, res, next) => {
   const result = await ChatRoom.find({
     participants: new ObjectId(userId),
   })
-    .populate("pings.author")
     .populate("participants");
 
   res.send(result);
@@ -30,13 +29,11 @@ router.get("/chat", async (req, res, next) => {
       { participants: new ObjectId(withUserId) },
     ],
   })
-    .populate("pings.author")
     .populate("participants");
 
   if (result.length === 0) {
     let createResult = await createDMChat(userId, withUserId);
     const newChat = await ChatRoom.findById(new ObjectId(createResult._id))
-      .populate("pings.author")
       .populate("participants");
     res.send(newChat);
   } else {

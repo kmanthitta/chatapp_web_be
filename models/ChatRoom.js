@@ -1,5 +1,4 @@
 const { Schema, model } = require("mongoose");
-const User = require("./User");
 var ObjectId = Schema.ObjectId;
 
 const ChatRoom = new Schema(
@@ -14,7 +13,7 @@ const ChatRoom = new Schema(
       type: [
         new Schema(
           {
-            author: { type: ObjectId, ref: "User" },
+            author: String,
             message: String,
           },
           { timestamps: true }
@@ -25,12 +24,18 @@ const ChatRoom = new Schema(
     latestPing: {
       type: new Schema(
         {
-          author: { type: ObjectId, ref: "User" },
+          author: String,
           message: String,
         },
         { timestamps: true }
       ),
     },
+    read: [
+      {
+        participantId: String,
+        readNotificationCount: Number,
+      },
+    ],
   },
   { timestamps: true }
 );
