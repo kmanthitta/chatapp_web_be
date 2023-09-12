@@ -15,6 +15,7 @@ router.post("/create", (req, res, next) => {
 });
 
 router.post("/ping", async (req, res, next) => {
+  const io = require("../socket").getIO();
   const { author, chatroomId, message } = req.body;
   const room = await ChatRoom.findById(new ObjectId(chatroomId));
   room.pings.push({ author, message });
@@ -34,7 +35,10 @@ router.post("/ping", async (req, res, next) => {
   }
   room
     .save()
-    .then(() => res.send("Sent"))
+    .then((resp) => {
+      io.emit("ping", resp);
+      res.send("Sent");
+    })
     .catch((error) => res.send(error));
 });
 
