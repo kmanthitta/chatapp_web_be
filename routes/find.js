@@ -3,7 +3,7 @@ const ChatRoom = require("../models/ChatRoom");
 const router = express.Router();
 const { Types } = require("mongoose");
 const User = require("../models/User");
-const { createDMChat } = require("./chat");
+const { createDMChat, createGroupChat } = require("./chat");
 var ObjectId = Types.ObjectId;
 
 router.get("/mychats", async (req, res, next) => {
@@ -11,8 +11,7 @@ router.get("/mychats", async (req, res, next) => {
 
   const result = await ChatRoom.find({
     participants: new ObjectId(userId),
-  })
-    .populate("participants");
+  }).populate("participants");
 
   res.send(result);
 });
@@ -28,17 +27,27 @@ router.get("/chat", async (req, res, next) => {
       },
       { participants: new ObjectId(withUserId) },
     ],
-  })
-    .populate("participants");
+  }).populate("participants");
 
   if (result.length === 0) {
     let createResult = await createDMChat(userId, withUserId);
-    const newChat = await ChatRoom.findById(new ObjectId(createResult._id))
-      .populate("participants");
+    const newChat = await ChatRoom.findById(
+      new ObjectId(createResult._id)
+    ).populate("participants");
     res.send(newChat);
   } else {
     res.send(result[0]);
   }
+});
+
+router.post("/groupChat", async (req, res, next) => {
+  console.log(req.body);
+  const participants = req.body.participants;
+  const name = req.body.name;
+
+  let createResult = await createGroupChat(name, participants);
+
+  res.send(createResult);
 });
 
 router.get("/users", async (req, res, next) => {

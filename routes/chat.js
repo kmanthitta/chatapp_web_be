@@ -5,15 +5,6 @@ const router = express.Router();
 const { Types } = require("mongoose");
 var ObjectId = Types.ObjectId;
 
-router.post("/create", (req, res, next) => {
-  const { participants, name, type } = req.body;
-  const chat = new ChatRoom({ name, type, participants });
-  chat
-    .save()
-    .then(() => res.send("Chat created"))
-    .catch((error) => res.send(error));
-});
-
 router.post("/ping", async (req, res, next) => {
   const io = require("../socket").getIO();
   const { author, chatroomId, message } = req.body;
@@ -77,4 +68,14 @@ const createDMChat = async (user1, user2) => {
   return result;
 };
 
-module.exports = { router, createDMChat };
+const createGroupChat = async (name, participants) => {
+  const chat = new ChatRoom({
+    name: name,
+    type: "group",
+    participants: participants,
+  });
+  const result = await chat.save();
+  return result;
+};
+
+module.exports = { router, createDMChat, createGroupChat };
