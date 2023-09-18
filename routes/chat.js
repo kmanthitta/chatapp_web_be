@@ -36,7 +36,10 @@ router.post("/ping", async (req, res, next) => {
   room
     .save()
     .then((resp) => {
-      io.emit("ping", resp);
+      io.emit("ping", {
+        chatId: resp._id,
+        ping: resp.pings[resp.pings.length - 1],
+      });
       res.send("Sent");
     })
     .catch((error) => res.send(error));
