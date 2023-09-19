@@ -41,13 +41,16 @@ router.get("/chat", async (req, res, next) => {
 });
 
 router.post("/groupChat", async (req, res, next) => {
-  console.log(req.body);
   const participants = req.body.participants;
   const name = req.body.name;
 
   let createResult = await createGroupChat(name, participants);
 
-  res.send(createResult);
+  const newChat = await ChatRoom.findById(
+    new ObjectId(createResult._id)
+  ).populate("participants");
+
+  res.send(newChat);
 });
 
 router.get("/users", async (req, res, next) => {
